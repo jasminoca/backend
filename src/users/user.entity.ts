@@ -1,5 +1,3 @@
-// src/users/user.entity.ts
-
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
@@ -8,48 +6,29 @@ export class User {
   user_id?: number;
 
   @Column()
-  username: string;
+  username!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
-  @Column({ unique: true }) // Email must be unique
-  email: string;
-
-  @Column()
-  user_type: string;
+  @Column({ unique: true })
+  email!: string;
 
   @Column()
-  first_name: string;
+  user_type!: string;
 
   @Column()
-  last_name: string;
+  first_name!: string;
 
   @Column()
-  role: string;
+  last_name!: string;
 
-  @CreateDateColumn() // Automatically sets the creation date
+  @Column()
+  role!: string;
+
+  @CreateDateColumn()
   created_at?: Date;
 
-  @UpdateDateColumn() // Automatically updates the date on each update
+  @UpdateDateColumn()
   updated_at?: Date;
-
-  // If you don't want default values, this constructor can help with the initialization
-  constructor(
-    username: string,
-    password: string,
-    email: string,
-    user_type: string,
-    first_name: string,
-    last_name: string,
-    role: string
-  ) {
-    this.username = username;
-    this.password = password;
-    this.email = email;
-    this.user_type = user_type;
-    this.first_name = first_name;
-    this.last_name = last_name;
-    this.role = role;
-  }
 }

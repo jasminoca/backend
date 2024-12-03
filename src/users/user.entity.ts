@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+/* eslint-disable prettier/prettier */
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-  user_id?: number;
+  id!: number; // Tell TypeScript this will be initialized by TypeORM
 
   @Column()
   username!: string;
@@ -11,10 +12,10 @@ export class User {
   @Column()
   password!: string;
 
-  @Column({ unique: true })
+  @Column()
   email!: string;
 
-  @Column()
+  @Column({ default: 'student' }) // Provide a default value
   user_type!: string;
 
   @Column()
@@ -26,9 +27,6 @@ export class User {
   @Column()
   role!: string;
 
-  @CreateDateColumn()
-  created_at?: Date;
-
-  @UpdateDateColumn()
-  updated_at?: Date;
+  @Column()
+  school_id!: string;
 }

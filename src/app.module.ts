@@ -14,7 +14,7 @@ import { UsersModule } from './users/users.module';
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '3306', 10),
       username: process.env.DB_USERNAME || 'root',
-      password: process.env.DB_PASSWORD || '',
+      password: process.env.DB_PASSWORD || '121202',
       database: process.env.DB_NAME || 'db_mathhew',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'production',

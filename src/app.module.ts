@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { VideosModule } from './videos/videos.module';
+import { AdminModule } from './admin/admin.module';
 
 
 @Module({
@@ -24,7 +25,7 @@ import { VideosModule } from './videos/videos.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'production',
     }),
-    UsersModule, AuthModule, LessonsModule, VideosModule,
+    UsersModule, AuthModule, LessonsModule, VideosModule, AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

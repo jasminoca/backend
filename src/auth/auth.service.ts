@@ -39,7 +39,14 @@ export class AuthService {
     console.log('Generated Token:', token); // Debug token
     return {
       access_token: token, // Ensure the token is returned in this format
+      user: { // Include user details in the response
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
     };
   }
+  
   
 }

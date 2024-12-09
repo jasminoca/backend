@@ -4,8 +4,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-  id!: number; // Tell TypeScript this will be initialized by TypeORM
-
+  id!: number; 
   @Column()
   username!: string;
 
@@ -15,7 +14,7 @@ export class User {
   @Column()
   email!: string;
 
-  @Column({ default: 'student' }) // Provide a default value
+  @Column()
   user_type!: string;
 
   @Column()

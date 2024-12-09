@@ -57,18 +57,21 @@ export class UsersService {
   }
 
   // Find a user by their email
-  async findByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { email } });
+  async findByEmail(email: string): Promise<User | undefined> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    return user || undefined; // Explicitly return undefined if user is null
   }
   
 
   // Validate the user's password
-  async validatePassword(
-    plainTextPassword: string,
-    hashedPassword: string,
-  ): Promise<boolean> {
-    return bcrypt.compare(plainTextPassword, hashedPassword);
+  async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
+    if (!password || !hashedPassword) {
+      throw new Error('Password or hashed password is missing');
+    }
+    return await bcrypt.compare(password, hashedPassword);
   }
+  
+
 
   // Sign in user
   async signIn(email: string, password: string): Promise<{ user: User; token: string }> {

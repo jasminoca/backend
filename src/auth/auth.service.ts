@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
@@ -13,23 +13,33 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.usersService.findByEmail(email);
+  
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      console.log('User not found for email:', email);
+      return null;
     }
   
+    console.log('Retrieved user:', user);
+  
     const isPasswordValid = await this.usersService.validatePassword(password, user.password);
+  
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      console.log('Invalid password for user:', email);
+      return null;
     }
   
     return user;
   }
   
-
+  
   async login(user: any) {
     const payload = { id: user.id, username: user.username, role: user.role };
+    console.log('JWT Payload:', payload); // Debug payload
+    const token = this.jwtService.sign(payload);
+    console.log('Generated Token:', token); // Debug token
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: token, // Ensure the token is returned in this format
     };
   }
+  
 }

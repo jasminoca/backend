@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
-      secret: 'secret_lang', // Replace with a secure secret
+      secret: 'defaultSecret', // Replace with a secure secret
       signOptions: { expiresIn: '1h' },
     }),
   ],

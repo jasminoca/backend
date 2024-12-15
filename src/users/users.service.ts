@@ -83,11 +83,14 @@ export class UsersService {
     }
   }
   
-  // Find user by email
   // Find a user by their email
   async findByEmail(email: string): Promise<User | undefined> {
    const user = await this.userRepository.findOne({ where: { email } });
     return user || undefined; // Explicitly return undefined if the user is null
+}
+
+async findUsersByRole(role: string): Promise<User[]> {
+  return this.userRepository.find({ where: { role } });
 }
 
   // Validate password

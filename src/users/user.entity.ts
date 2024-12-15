@@ -5,6 +5,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 export class User {
   @PrimaryGeneratedColumn()
   id!: number; 
+  
   @Column()
   username!: string;
 
@@ -28,4 +29,8 @@ export class User {
 
   @Column()
   school_id!: string;
+
+  @Column({ type: "text", nullable: true })
+  profileImage!: string;
+
 }

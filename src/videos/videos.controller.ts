@@ -14,24 +14,24 @@ export class VideosController {
   }
 
   @Post()
-  @UseGuards(AuthGuard) // Protect with authentication
-  async create(@Body() video: Partial<Video>): Promise<Video> {
-    return this.videosService.create(video);
-  }
+@UseGuards(AuthGuard)
+async create(@Body() video: Partial<Video>) {
+  const createdVideo = await this.videosService.create(video);
+  return { message: 'Video created successfully', data: createdVideo };
+}
 
-  // Update a video by ID
-  @Put(':id')
-  @UseGuards(AuthGuard) // Protect with authentication
-  async update(
-    @Param('id') id: number,
-    @Body() updateVideoDto: Partial<Video>,
-  ): Promise<Video> {
-    return this.videosService.update(id, updateVideoDto);
-  }
+@Put(':id')
+@UseGuards(AuthGuard)
+async update(@Param('id') id: number, @Body() updateVideoDto: Partial<Video>) {
+  const updatedVideo = await this.videosService.update(id, updateVideoDto);
+  return { message: 'Video updated successfully', data: updatedVideo };
+}
 
-  @Delete(':id')
-  @UseGuards(AuthGuard) // Protect with authentication
-  async delete(@Param('id') id: number): Promise<void> {
-    return this.videosService.delete(id);
-  }
+@Delete(':id')
+@UseGuards(AuthGuard) // Protect with authentication
+async delete(@Param('id') id: number) {
+  await this.videosService.delete(id);
+  return { message: 'Video deleted successfully' };
+}
+
 }

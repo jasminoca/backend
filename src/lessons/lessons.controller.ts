@@ -26,13 +26,12 @@ export class LessonsController {
 
   // Update a lesson by ID
   @Put(':id')
-  @UseGuards(AuthGuard) // Protect with authentication
-  async update(
-    @Param('id') id: number,
-    @Body() updateLessonDto: Partial<Lesson>,
-  ): Promise<Lesson> {
-    return this.lessonsService.update(id, updateLessonDto);
-  }
+@UseGuards(AuthGuard)
+async update(@Param('id') id: number, @Body() updateLessonDto: Partial<Lesson>) {
+  const updatedLesson = await this.lessonsService.update(id, updateLessonDto);
+  return { message: 'Lesson updated successfully', data: updatedLesson };
+}
+
 
   // Delete a lesson by ID
   @Delete(':id')

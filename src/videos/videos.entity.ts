@@ -19,6 +19,10 @@ export class Video {
   @CreateDateColumn()
   created_at!: Date;
 
-  @ManyToOne(() => Lesson, (lesson) => lesson.videos, { nullable: true })
+  @ManyToOne(() => Lesson, (lesson) => lesson.videos, {
+    nullable: true,
+    onDelete: 'CASCADE', // Automatically delete associated videos when lesson is deleted
+  })
   lesson!: Lesson;
+  
 }

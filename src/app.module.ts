@@ -11,7 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { VideosModule } from './videos/videos.module';
 import { AdminModule } from './admin/admin.module';
-
+import { ScoresModule } from './scores/scores.module'; // Import the ScoresModule
 
 @Module({
   imports: [
@@ -22,10 +22,15 @@ import { AdminModule } from './admin/admin.module';
       username: process.env.DB_USERNAME || 'root',
       password: process.env.DB_PASSWORD || '121202',
       database: process.env.DB_NAME || 'db_mathhew',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: process.env.NODE_ENV !== 'production',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'], // Automatically loads all entity files
+      synchronize: process.env.NODE_ENV !== 'production', // Synchronize schema only in development
     }),
-    UsersModule, AuthModule, LessonsModule, VideosModule, AdminModule,
+    UsersModule,
+    AuthModule,
+    LessonsModule,
+    VideosModule,
+    AdminModule,
+    ScoresModule,
   ],
   controllers: [AppController],
   providers: [AppService],

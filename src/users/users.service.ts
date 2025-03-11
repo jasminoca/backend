@@ -72,7 +72,6 @@ export class UsersService {
     if (!updatedUser) {
       throw new NotFoundException('Updated user not found');
     }
-  
     return updatedUser; // Ensure updatedUser is not null
   }
   

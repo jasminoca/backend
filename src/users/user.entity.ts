@@ -27,10 +27,10 @@ export class User {
   @Column()
   role!: string;
 
-  @Column()
+  @Column({ unique: true, nullable: true })
   school_id!: string;
 
-  @Column({ type: "text", nullable: true })
+  @Column({ type: "longtext", nullable: true })
   profileImage!: string;
 
 }

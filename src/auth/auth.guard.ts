@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 
@@ -11,39 +11,41 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<string[]>('roles', context.getHandler()); // Fetch allowed roles
+    // Get the required roles for the route (if any)
+    const roles = this.reflector.get<string[]>('roles', context.getHandler());
+    
+    // Extract the request object
     const request = context.switchToHttp().getRequest();
-    const token = request.headers.authorization?.split(' ')[1]; // Extract token
-
-    // If no token, deny access
-    if (!token) {
-      console.error('No token found in the request.');
-      throw new ForbiddenException('Token is required for access.');
+    
+    // Get token from Authorization header
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('Missing or invalid Authorization header.');
+      throw new UnauthorizedException('Authentication token is required.');
     }
 
+    const token = authHeader.split(' ')[1]; // Extract token
+
     try {
-      // Verify the token and decode user data
+      // Verify the JWT token
       const decoded = this.jwtService.verify(token);
       console.log('Decoded Token:', decoded);
 
-      // Attach the decoded user to the request for further usage
+      // Attach the decoded user to the request for further processing
       request.user = decoded;
 
-      // If roles are specified (e.g., 'admin'), check against decoded role
+      // If roles are specified, check if the user has the required role
       if (roles && !roles.includes(decoded.role)) {
         console.warn('Role mismatch:', { requiredRoles: roles, userRole: decoded.role });
-        throw new ForbiddenException(`Access denied: You need one of the following roles: ${roles.join(', ')}`);
+        throw new ForbiddenException(`Access denied: Requires one of the roles: ${roles.join(', ')}`);
       }
 
-      return true; // Grant access
-    } catch (error) {
-      // Improved error handling for debugging
-      if (error instanceof Error) {
-        console.error('AuthGuard Error:', error.message);
-      } else {
-        console.error('AuthGuard Error:', error);
-      }
-      throw new ForbiddenException('Invalid or expired token.');
-    }
+      return true; // Allow access if everything is valid
+    } 
+      catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+          console.error('AuthGuard Error:', errorMessage);
+      throw new UnauthorizedException('Invalid or expired authentication token.');
+    }    
   }
 }

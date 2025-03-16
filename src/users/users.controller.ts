@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Param, Get, Patch, Query, NotFoundException, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Patch, Query, NotFoundException, Delete, BadRequestException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from './user.entity';
 
-@Controller('users') // Handles user-related operations
+@Controller('users')
 export class UsersController {
+  authService: any;
   constructor(private readonly usersService: UsersService) {}
 
   @Post('register') // Endpoint: /users/register
@@ -17,6 +18,15 @@ export class UsersController {
   @Get() // Endpoint: /users
   async getAllUsers(): Promise<User[]> {
     return this.usersService.getAllUsers();
+  }
+
+  @Get('check-existence')
+  async checkExistence(
+    @Query('username') username: string,
+    @Query('email') email: string,
+    @Query('school_id') school_id: string,
+  ) {
+    return this.usersService.checkUserExistence(username, email, school_id);
   }
 
   @Get('filter') // New Endpoint: /users/filter?role=student
@@ -42,11 +52,13 @@ export class UsersController {
   }
 
   @Patch(':id')
-  async updateUser(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-    const updatedUser = await this.usersService.updateUser(id, updateUserDto);
-    if (!updatedUser) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-    return updatedUser;
+async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  const numericId = parseInt(id, 10); // Convert string to number
+  if (isNaN(numericId)) {
+    throw new BadRequestException("Invalid user ID format"); // Handle invalid ID
   }
+
+  return this.usersService.updateUser(numericId, updateUserDto); // Pass number
+}
+
 }

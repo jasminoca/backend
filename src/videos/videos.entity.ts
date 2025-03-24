@@ -21,7 +21,7 @@ export class Video {
 
   @ManyToOne(() => Lesson, (lesson) => lesson.videos, {
     nullable: true,
-    onDelete: 'CASCADE', // Automatically delete associated videos when lesson is deleted
+    onDelete: 'CASCADE', 
   })
   lesson!: Lesson;
   

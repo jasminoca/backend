@@ -140,7 +140,6 @@ export class ScoresService {
         score.answers = {};
       }
     }
-
     return score;
   } 
 

@@ -43,4 +43,13 @@ export class ScoresController {
   submitGameScore(@Body() body: { score: number; school_id: string; game_name: string }) {
     return this.scoresService.submitGameScore(body);
   }
+
+  @Get(':lessonId/:schoolId')
+  getScoreForLessonAndStudent(
+    @Param('lessonId') lessonId: number,
+    @Param('schoolId') schoolId: string
+  ) {
+    return this.scoresService.findOneScore(lessonId, schoolId);
+  }
+
 }

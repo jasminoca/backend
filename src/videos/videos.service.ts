@@ -1,63 +1,45 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Video } from '../videos/videos.entity';
-import { Lesson } from '../lessons/lesson.entity';
-
+import { Injectable, NotFoundException } from '@nestjs/common';
+import * as admin from 'firebase-admin';
+import { Video } from './videos.entity';
 
 @Injectable()
 export class VideosService {
-    async update(id: number, updateVideoDto: Partial<Video>): Promise<Video> {
-        const video = await this.videosRepository.findOne({ where: { id } });
-        if (!video) {
-          throw new Error('Video not found');
-        }
-        Object.assign(video, updateVideoDto);
-        return this.videosRepository.save(video);
-      }
-      
-  constructor(
-    @InjectRepository(Video)
-    private readonly videosRepository: Repository<Video>,
-  ) {}
+  private db = admin.firestore();
+  private videosCollection = this.db.collection('videos');
 
-  // Fetch all videos
+  async create(data: Video): Promise<Video> {
+    const docRef = this.videosCollection.doc();
+    const video: Video = {
+      ...data,
+      id: docRef.id,
+      createdAt: new Date().toISOString(),
+    };
+    await docRef.set(video);
+    return video;
+  }
+
   async findAll(): Promise<Video[]> {
-    return this.videosRepository.find({
-      select: ['id', 'title', 'url', 'lesson'], // Explicitly include lessonId
-      relations: ['lesson'],
-    });
-  }
-  
-  // Create a new video
-  async create(video: Partial<Video>): Promise<Video> {
-    if (!video.lesson || !video.lesson.id) {
-      throw new Error('Lesson ID is required.');
-    }
-  
-    const lessonRepository = this.videosRepository.manager.getRepository(Lesson);
-    const lesson = await lessonRepository.findOne({ where: { id: video.lesson.id } });
-  
-    if (!lesson) {
-      throw new Error('Associated Lesson not found.');
-    }
-  
-    const newVideo = this.videosRepository.create({
-      ...video,
-      lesson: lesson,
-    });
-  
-    return await this.videosRepository.save(newVideo);
+    const snapshot = await this.videosCollection.get();
+    return snapshot.docs.map(doc => doc.data() as Video);
   }
 
-  // Delete a video by ID
-  async delete(id: number): Promise<void> {
-    const video = await this.videosRepository.findOne({ where: { id } });
-    if (!video) {
-      throw new Error('Video not found');
+  async findOne(id: string): Promise<Video> {
+    const doc = await this.videosCollection.doc(id).get();
+    if (!doc.exists) {
+      throw new NotFoundException(`Video with ID ${id} not found`);
     }
-    await this.videosRepository.delete(id);
+    return doc.data() as Video;
   }
-  
+
+  async update(id: string, data: Partial<Video>): Promise<Video> {
+    const docRef = this.videosCollection.doc(id);
+    await docRef.update({ ...data });
+    const updated = await docRef.get();
+    return updated.data() as Video;
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.videosCollection.doc(id).delete();
+  }
 }

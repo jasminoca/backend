@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/user.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -12,41 +13,26 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(identifier: string, pass: string): Promise<any> {
-    // Find user by email or school_id
-    const user = await this.usersService.findByEmailOrSchoolId(identifier);
+  async validateUser(identifier: string, pass: string): Promise<User | null> {
+    const user = await this.usersService.findByEmailUsernameOrSchoolId(identifier);
+    if (!user) return null;
 
-    if (!user) {
-      console.warn(`Login failed: User not found for ${identifier}`);
-      throw new UnauthorizedException('Invalid email, school ID, or password');
-    }
+    const isPasswordValid = await bcrypt.compare(pass, user.password ?? '');
+    if (!isPasswordValid) return null;
 
-    const isPasswordValid = await bcrypt.compare(pass, user.password);
-    if (!isPasswordValid) {
-      console.warn(`Login failed: Incorrect password for ${identifier}`);
-      throw new UnauthorizedException('Invalid email, school ID, or password');
-    }
-
-    const { password, ...userData } = user;
-    return userData;
+    return user;
   }
 
-  async login(user: any) {
-    const payload = { id: user.id, username: user.username, role: user.role };
-    console.log('JWT Payload:', payload); // Debug payload
-
-    const token = this.jwtService.sign(payload);
-    console.log('Generated Token:', token); // Debug token
+  async login(user: User) {
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      school_id: user.school_id,
+    };
 
     return {
-      access_token: token, // Ensure the token is returned in this format
-      user: { 
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        school_id: user.school_id, // Include school_id in response
-        role: user.role,
-      },
+      access_token: this.jwtService.sign(payload),
     };
   }
 }

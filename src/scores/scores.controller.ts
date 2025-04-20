@@ -1,55 +1,39 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Get, Query, Param} from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, Patch, Delete, } from '@nestjs/common';
 import { ScoresService } from './scores.service';
-import { CreateScoreDto } from '../dto/create-score.dto';
-// import { SubmitGameScoreDto } from '../dto/submit-game-score.dto';
+import { Score } from './scores.entity';
 
 @Controller('scores')
 export class ScoresController {
   constructor(private readonly scoresService: ScoresService) {}
 
   @Post()
-  async addScore(@Body() createScoreDto: CreateScoreDto) {
-    return this.scoresService.addScore(createScoreDto);
+  create(@Body() score: Score) {
+    return this.scoresService.create(score);
   }
 
-  @Get('by-school')
-  async getScoresBySchoolId(@Query('school_id') school_id: string) {
-    return this.scoresService.getStudentScoresBySchoolId(school_id);
+  @Get()
+  findAll() {
+    return this.scoresService.findAll();
   }
 
-  @Get('math-speedy-scores')
-    async getMathSpeedyScores() {
-  const lesson_id = 1; // Assume 1 is the ID for Math Speedy Quiz
-  return this.scoresService.getScoresByLessonId(lesson_id);
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.scoresService.findByUser(userId);
   }
 
-  @Get('/by-student/:school_id')
-  getScoresByStudent(@Param('school_id') schoolId: string) {
-    return this.scoresService.getScoresByStudent(schoolId);
-  }
-  
-  @Get('/all-lessons')
-  getAllLessonScores() {
-    return this.scoresService.getAllLessonScores();
-  }
-  
-  @Get('/all-games')
-  getAllGameScores() {
-    return this.scoresService.getAllGameScores();
-  }
-  
-  @Post('/submit-game')
-  submitGameScore(@Body() body: { score: number; school_id: string; game_name: string }) {
-    return this.scoresService.submitGameScore(body);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.scoresService.findOne(id);
   }
 
-  @Get(':lessonId/:schoolId')
-  getScoreForLessonAndStudent(
-    @Param('lessonId') lessonId: number,
-    @Param('schoolId') schoolId: string
-  ) {
-    return this.scoresService.findOneScore(lessonId, schoolId);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() score: Partial<Score>) {
+    return this.scoresService.update(id, score);
   }
 
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.scoresService.remove(id);
+  }
 }

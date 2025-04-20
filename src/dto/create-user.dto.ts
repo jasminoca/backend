@@ -1,34 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { IsString, IsEmail, IsNotEmpty } from 'class-validator';
-
 export class CreateUserDto {
-  @IsString()
-  @IsNotEmpty()
-  username!: string; 
-  @IsString()
-  @IsNotEmpty()
-  password!: string; 
-  @IsEmail()
-  @IsNotEmpty()
-  email!: string; 
-
-  @IsString()
-  @IsNotEmpty()
-  user_type!: string; 
-
-  @IsString()
-  @IsNotEmpty()
-  first_name!: string; 
-
-  @IsString()
-  @IsNotEmpty()
-  last_name!: string; 
-
-  @IsString()
-  @IsNotEmpty()
-  role!: string; 
-  
-  @IsString()
-  @IsNotEmpty()
-  school_id!: string;
+  readonly full_name?: string;
+  readonly email?: string;
+  readonly password?: string;
+  readonly role?: string;
+  readonly school_id?: string;
 }

@@ -10,6 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "esModuleInterop": true,
+    "resolveJsonModule": true,        // ✅ Add this line
     "rootDir": "./src"
   },
   "include": ["src/**/*.ts"],

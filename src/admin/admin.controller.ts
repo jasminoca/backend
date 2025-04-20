@@ -8,6 +8,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 @Controller('admin')
 @UseGuards(AuthGuard)
 export class AdminController {
+  usersService: any;
   constructor(private readonly adminService: AdminService) {}
 
   // Admin Dashboard
@@ -29,20 +30,20 @@ export class AdminController {
   @Get('users')
   @Roles('admin')
   getAllUsers() {
-    return this.adminService.findAll();
+    return this.adminService.getAllUsers();
   }
 
   // Update a user by ID
   @Put('users/:id')
   @Roles('admin')
   updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.adminService.update(id, updateUserDto);
+    return this.usersService.update(id, updateUserDto); // if injected
   }
 
   // Delete a user by ID
   @Delete('users/:id')
   @Roles('admin')
   deleteUser(@Param('id') id: string) {
-    return this.adminService.remove(id);
+    return this.adminService.deleteUser(id);
   }
 }

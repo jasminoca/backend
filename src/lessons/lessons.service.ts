@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { Lesson } from './lesson.entity';
@@ -22,21 +23,33 @@ export class LessonsService {
   }
 
   async findAll(): Promise<Lesson[]> {
-    const snapshot = await this.lessonsCollection.get();
-    return snapshot.docs.map((doc) => doc.data() as Lesson);
+    const defaultIds = ['whole-numbers', 'fractions', 'measurements', 'decimals'];
+    const defaultLessons = await Promise.all(defaultIds.map(id => this.findOne(id)));
+    return defaultLessons;
   }
 
   async findOne(id: string): Promise<Lesson> {
     const doc = await this.lessonsCollection.doc(id).get();
+
     if (!doc.exists) {
-      throw new NotFoundException(`Lesson with ID ${id} not found`);
+      const fallbackLesson: Lesson = {
+        id,
+        title: this.formatTitle(id),
+        description: '',
+        video_url: '',
+        keypoints: [],
+        questions: [],
+        scores: {}
+      };
+      return fallbackLesson;
     }
+
     return doc.data() as Lesson;
   }
 
   async update(id: string, updateData: Partial<Lesson>): Promise<Lesson> {
     const docRef = this.lessonsCollection.doc(id);
-    await docRef.update({ ...updateData });
+    await docRef.set(updateData, { merge: true });
     const updated = await docRef.get();
     return updated.data() as Lesson;
   }
@@ -45,8 +58,14 @@ export class LessonsService {
     await this.lessonsCollection.doc(id).delete();
   }
 
-  // ✅ KEYPOINT METHODS
+  // Format default title from ID (e.g., whole-numbers -> Whole Numbers)
+  private formatTitle(id: string): string {
+    return id
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
 
+  // KEYPOINT 
   async addKeypoint(lessonId: string, content: string) {
     const doc = this.lessonsCollection.doc(lessonId);
     const lesson = (await doc.get()).data() as Lesson;
@@ -73,8 +92,7 @@ export class LessonsService {
     await doc.update({ keypoints: lesson.keypoints });
   }
 
-  // ✅ QUESTION METHODS
-
+  // QUESTION 
   async addQuestion(lessonId: string, data: { question: string; choices: string[]; correctAnswer: string }) {
     const doc = this.lessonsCollection.doc(lessonId);
     const lesson = (await doc.get()).data() as Lesson;

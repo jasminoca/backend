@@ -3,13 +3,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from './user.entity';
-import * as admin from 'firebase-admin';
+import { db } from '../firebase'; 
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  private db = admin.firestore();
-  private usersCollection = this.db.collection('users');
+  private usersCollection = db.collection('users');
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const newUserRef = this.usersCollection.doc();

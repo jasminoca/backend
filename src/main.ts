@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import './firebase'; // ✅ Force Firebase Admin init BEFORE anything else
+import './firebase'; 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';

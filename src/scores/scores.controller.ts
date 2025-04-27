@@ -1,39 +1,61 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Get, Param, Body, Patch, Delete, } from '@nestjs/common';
+import { Controller, Get, Post, Query, Param, Body } from '@nestjs/common';
 import { ScoresService } from './scores.service';
-import { Score } from './scores.entity';
+import { UpdateQuestionAttemptDto } from '../dto/submit-answers.dto';
 
 @Controller('scores')
 export class ScoresController {
   constructor(private readonly scoresService: ScoresService) {}
 
-  @Post()
-  create(@Body() score: Score) {
-    return this.scoresService.create(score);
+  // Student submits LESSON score
+  @Post(':lessonId')
+  async submitLessonScore(
+    @Param('lessonId') lessonId: string,
+    @Body() body: UpdateQuestionAttemptDto,
+  ) {
+    const { school_id, answers } = body;
+    return await this.scoresService.submitLessonScore(lessonId, school_id, answers);
   }
 
-  @Get()
-  findAll() {
-    return this.scoresService.findAll();
+  // Student submits GAME score
+  @Post('game/:schoolId')
+  async submitGameScore(
+    @Param('schoolId') schoolId: string,
+    @Body() body: { game_name: string; score: number },
+  ) {
+    return await this.scoresService.submitGameScore(schoolId, body.game_name, body.score);
   }
 
-  @Get('user/:userId')
-  findByUser(@Param('userId') userId: string) {
-    return this.scoresService.findByUser(userId);
+  // Student views their own LESSON scores
+  @Get('lesson')
+  async getStudentLessonScores(@Query('school_id') schoolId: string) {
+    if (schoolId) {
+      return await this.scoresService.getStudentLessonScores(schoolId);
+    }
+    return await this.scoresService.getAllLessonScores(); // Admin view
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.scoresService.findOne(id);
+  // Student views their own GAME scores
+  @Get('game')
+  async getStudentGameScores(@Query('school_id') schoolId: string) {
+    if (schoolId) {
+      return await this.scoresService.getStudentGameScores(schoolId);
+    }
+    return await this.scoresService.getAllGameScores(); // Admin view
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() score: Partial<Score>) {
-    return this.scoresService.update(id, score);
+  // View old score for a lesson (reload answers on LessonsPage)
+  @Get(':lessonId/:schoolId')
+  async getStudentScore(
+    @Param('lessonId') lessonId: string,
+    @Param('schoolId') schoolId: string,
+  ) {
+    return await this.scoresService.getStudentScore(lessonId, schoolId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.scoresService.remove(id);
+  // View leaderboard for games
+  @Get('leaderboard/game')
+  async getGameLeaderboard() {
+    return await this.scoresService.getGameLeaderboard(10); // Top 10 students
   }
 }

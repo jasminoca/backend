@@ -18,4 +18,6 @@ export interface Lesson {
       attempts: number;
     };
   };
+  isEnabled: boolean;
+  difficulty: string;
 }

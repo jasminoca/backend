@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
 export class Score {
-  id?: string;
-  userId?: string;
+  id?: string; 
+  school_id!: string;
+  type!: 'lesson' | 'game';
   lessonId?: string;
-  gameId?: string;
-  type?: 'lesson' | 'game';
-  score?: number;
-  attempts?: number;
-  createdAt?: string;
+  game_name?: string;
+  score!: number;
+  created_at!: number;
+  answers?: { [questionId: string]: string };
 }

@@ -87,7 +87,7 @@ export class LessonsController {
     @Param('lessonId') lessonId: string,
     @Body() body: UpdateQuestionAttemptDto, // school_id and answers from student
   ) {
-    return await this.lessonsService.submitLessonScore(lessonId, body.school_id, body.answers);
+    return await this.scoresService.submitLessonScore(lessonId, body.school_id, body.answers);
   }
 
   // ===== LESSON ENABLE / DISABLE =====

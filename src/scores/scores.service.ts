@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { Score } from './scores.entity';
@@ -64,14 +64,12 @@ export class ScoresService {
     return snapshot.docs.map(doc => doc.data() as Score);
   }
 
-  async getStudentGameScores(schoolId: string): Promise<Score[]> {
-    const snapshot = await this.scoresCollection
-      .where('type', '==', 'game')
+  async getStudentGameScores(schoolId: string): Promise<any[]> {
+    const snapshot = await this.db.collection('games')
       .where('school_id', '==', schoolId)
-      .orderBy('created_at', 'desc')
       .get();
-
-    return snapshot.docs.map(doc => doc.data() as Score);
+  
+    return snapshot.docs.map(doc => doc.data());
   }
 
   // Teacher/Admin fetch all students' scores by type
@@ -84,13 +82,9 @@ export class ScoresService {
     return snapshot.docs.map(doc => doc.data() as Score);
   }
 
-  async getAllGameScores(): Promise<Score[]> {
-    const snapshot = await this.scoresCollection
-      .where('type', '==', 'game')
-      .orderBy('created_at', 'desc')
-      .get();
-
-    return snapshot.docs.map(doc => doc.data() as Score);
+  async getAllGameScores(): Promise<any[]> {
+    const snapshot = await this.db.collection('games').get();
+    return snapshot.docs.map(doc => doc.data());
   }
 
   // Leaderboard for games only (Top scores)

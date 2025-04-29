@@ -15,6 +15,8 @@ import { VideosModule } from './videos/videos.module';
 // JWT
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
+import { GamesModule } from './game/games.module';
+
 
 // Firebase Admin
 import * as admin from 'firebase-admin';
@@ -33,6 +35,7 @@ import * as serviceAccount from '../math-75c23-firebase-adminsdk-fbsvc-b37ecf081
     LessonsModule,
     ScoresModule,
     VideosModule,
+    GamesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

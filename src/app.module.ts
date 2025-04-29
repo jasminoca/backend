@@ -11,13 +11,14 @@ import { LessonsModule } from './lessons/lessons.module';
 import { ScoresModule } from './scores/scores.module';
 import { VideosModule } from './videos/videos.module';
 
+
 // JWT
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 
 // Firebase Admin
 import * as admin from 'firebase-admin';
-import * as serviceAccount from '../firebase-service-account.json'; //
+import * as serviceAccount from '../math-75c23-firebase-adminsdk-fbsvc-b37ecf0812.json'; //
 
 @Module({
   imports: [
@@ -38,7 +39,6 @@ import * as serviceAccount from '../firebase-service-account.json'; //
 })
 export class AppModule {
   constructor() {
-    // ✅ Initialize Firebase Admin SDK once
     if (!admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),

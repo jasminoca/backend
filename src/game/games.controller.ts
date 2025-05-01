@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { GamesService } from './games.service';
 
 @Controller('games')
@@ -10,4 +10,11 @@ export class GamesController {
   async submitGameScore(@Body() body: any) {
     return this.gamesService.submitGameScore(body);
   }
+
+  @Get()
+  async getAllGameScores() {
+    const snapshot = await this.gamesService.getAllGameScores();
+    return snapshot;
+  }
+
 }

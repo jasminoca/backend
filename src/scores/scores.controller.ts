@@ -1,21 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Query, Param, Body } from '@nestjs/common';
 import { ScoresService } from './scores.service';
-import { UpdateQuestionAttemptDto } from '../dto/submit-answers.dto';
 
 @Controller('scores')
 export class ScoresController {
   constructor(private readonly scoresService: ScoresService) {}
-
-  // Student submits LESSON score
-  @Post(':lessonId')
-  async submitLessonScore(
-    @Param('lessonId') lessonId: string,
-    @Body() body: UpdateQuestionAttemptDto,
-  ) {
-    const { school_id, answers } = body;
-    return await this.scoresService.submitLessonScore(lessonId, school_id, answers);
-  }
 
   // Student submits GAME score
   @Post('game')
@@ -30,6 +19,15 @@ export class ScoresController {
       return await this.scoresService.getStudentLessonScores(schoolId);
     }
     return await this.scoresService.getAllLessonScores(); // Admin view
+  }
+
+  @Post('lesson/:lessonId/submit')
+  async submitLessonScore(
+    @Param('lessonId') lessonId: string,
+    @Body() body: { school_id: string; answers: any; attempts: number }
+  ) {
+    const { school_id, answers, attempts } = body;
+    return await this.scoresService.submitLessonScore(lessonId, school_id, answers, attempts);
   }
 
   // Student views their own GAME scores

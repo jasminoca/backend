@@ -4,7 +4,7 @@ import { LessonsService } from './lessons.service';
 import { Lesson } from './lesson.entity';
 import { CreateQuestionDto } from '../dto/create-question.dto';
 import { UpdateQuestionDto } from '../dto/update-question.dto';
-import { UpdateQuestionAttemptDto } from '../dto/submit-answers.dto';
+import { SubmitAnswersDto } from '../dto/submit-answers.dto';
 import { ScoresService } from '../scores/scores.service'; // 🔥 Import this
 
 
@@ -85,9 +85,9 @@ export class LessonsController {
   @Post(':lessonId/submit')
   async submitLessonScore(
     @Param('lessonId') lessonId: string,
-    @Body() body: UpdateQuestionAttemptDto, // school_id and answers from student
+    @Body() body: SubmitAnswersDto, // school_id and answers from student
   ) {
-    return await this.scoresService.submitLessonScore(lessonId, body.school_id, body.answers);
+    return await this.lessonsService.submitLessonScore(lessonId, body.school_id, body.answers);
   }
 
   // ===== LESSON ENABLE / DISABLE =====

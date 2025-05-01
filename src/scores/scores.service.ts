@@ -8,38 +8,54 @@ import { Score } from './scores.entity';
 export class ScoresService {
   private db = admin.firestore();
   private scoresCollection = this.db.collection('scores');
+  private lessonsCollection = this.db.collection('lessons');
 
-  // Student submitting a lesson score
-  async submitLessonScore(lessonId: string, schoolId: string, answers: { [questionId: string]: string }): Promise<void> {
-    const lessonDoc = await admin.firestore().collection('lessons').doc(lessonId).get();
-    const lessonData = lessonDoc.data();
-    const lessonTitle = lessonData?.title || "Untitled";
+  async submitLessonScore(
+    lessonId: string,
+    schoolId: string,
+    answers: { [questionId: string]: string },
+    attemptsFromFrontend?: number,
+  ): Promise<void> {
+    const docId = `${lessonId}_${schoolId}`;
   
-    const correctAnswers = (lessonData?.questions || []).reduce((acc: any, q: any) => {
-      acc[q.id] = q.correctAnswer;
-      return acc;
-    }, {});
+    const lessonSnapshot = await this.lessonsCollection.doc(lessonId).get();
+    const lessonData = lessonSnapshot.data();
   
     let score = 0;
-    for (const qId in answers) {
-      if (answers[qId]?.trim().toLowerCase() === correctAnswers[qId]?.trim().toLowerCase()) {
-        score++;
+  
+    if (lessonData && lessonData.questions) {
+      for (const question of lessonData.questions) {
+        const qid = question.id;
+        const correct = question.correctAnswer?.toLowerCase().trim();
+        const studentAnswer = answers[qid]?.toLowerCase().trim();
+        if (studentAnswer && studentAnswer === correct) {
+          score++;
+        }
       }
     }
   
-    // When saving, include lesson_title
-    const scoreDoc = this.scoresCollection.doc(`${lessonId}_${schoolId}`);
-    await scoreDoc.set({
-      lessonId,
-      lessonTitle, // ➡️ Save title along with score
-      school_id: schoolId,
+    const data = {
       answers,
       score,
+      school_id: schoolId,
+      lessonId,
+      lessonTitle: lessonData?.title || '',
+      type: 'lesson',
       created_at: new Date().toISOString(),
-      type: "lesson",
-    });
+      attempts: attemptsFromFrontend ?? 1,
+    };
+  
+    await this.scoresCollection.doc(docId).set(data);
   }
+  
 
+  async getScoreForLesson(lessonId: string, schoolId: string): Promise<any> {
+    const docId = `${lessonId}_${schoolId}`;
+    const doc = await this.scoresCollection.doc(docId).get();
+    if (!doc.exists) return null;
+    return doc.data();
+  }
+  
   // Student submitting a game score
   async submitGameScore(data: any) {
     const { school_id, game_name, score } = data;
@@ -103,22 +119,25 @@ export class ScoresService {
     const docId = `${lessonId}_${schoolId}`;
     const scoreDoc = await this.scoresCollection.doc(docId).get();
   
-    if (!scoreDoc.exists) {
-      return null;
-    }
-  
+    if (!scoreDoc.exists) return null;
     return scoreDoc.data() as Score;
   }
   
-  async getScoreByLessonAndSchool(lessonId: string, schoolId: string): Promise<any> {
-    const snapshot = await this.scoresCollection
-      .where('lessonId', '==', lessonId)
-      .where('schoolId', '==', schoolId)
-      .limit(1)
-      .get();
+  // Used in GET /scores/:lessonId/:schoolId
+  async getScoreByLessonAndSchool(lessonId: string, schoolId: string) {
+    const score = await this.getStudentScore(lessonId, schoolId);
+    if (!score) return {};
   
-    if (snapshot.empty) return null;
-    return snapshot.docs[0].data();
+    return {
+      answers: score.answers || {},
+      score: score.score || 0,
+      attempts: score.attempts || 0,
+      school_id: score.school_id,
+      lessonId: score.lessonId,
+      lessonTitle: score.lessonTitle,
+      type: score.type,
+      created_at: score.created_at,
+    };
   }
   
 }

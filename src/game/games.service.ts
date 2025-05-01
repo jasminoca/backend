@@ -13,10 +13,15 @@ export class GamesService {
       studentName: data.studentName,
       score: data.score,
       type: data.type,
-      created_at: new Date().toISOString(),
       school_id: data.school_id, 
     };
 
     await this.gamesCollection.add(gameScore);
   }
+  
+  async getAllGameScores(): Promise<any[]> {
+    const snapshot = await this.gamesCollection.get();
+    return snapshot.docs.map(doc => doc.data());
+  }
+  
 }

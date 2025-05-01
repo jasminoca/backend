@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-export class UpdateQuestionAttemptDto {
+export class SubmitAnswersDto {
   school_id!: string;
-  answers!: { [questionId: string]: string; };
+  answers!: { [key: string]: string; };
+  attempts?: number;
 }

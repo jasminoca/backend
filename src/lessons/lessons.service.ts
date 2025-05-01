@@ -167,37 +167,37 @@ export class LessonsService {
     await doc.update({ questions: lesson.questions });
   }
 
-  // // SUBMIT SCORE
-  // async submitLessonScore(lessonId: string, schoolId: string, answers: any): Promise<void> {
-  //   const scoresCollection = this.db.collection('scores');
-  //   const docId = `${lessonId}_${schoolId}`;
-  //   const scoreDoc = await scoresCollection.doc(docId).get();
+  // SUBMIT SCORE
+  async submitLessonScore(lessonId: string, schoolId: string, answers: any): Promise<void> {
+    const scoresCollection = this.db.collection('scores');
+    const docId = `${lessonId}_${schoolId}`;
+    const scoreDoc = await scoresCollection.doc(docId).get();
 
-  //   let attempts = 1;
-  //   if (scoreDoc.exists) {
-  //     const data = scoreDoc.data();
-  //     attempts = (data?.attempts || 0) + 1;
-  //   }
+    let attempts = 1;
+    if (scoreDoc.exists) {
+      const data = scoreDoc.data();
+      attempts = (data?.attempts || 0) + 1;
+    }
 
-  //   const lessonRef = this.lessonsCollection.doc(lessonId);
-  //   const lessonData = (await lessonRef.get()).data();
-  //   const questions = lessonData?.questions || [];
+    const lessonRef = this.lessonsCollection.doc(lessonId);
+    const lessonData = (await lessonRef.get()).data();
+    const questions = lessonData?.questions || [];
 
-  //   let correct = 0;
-  //   (questions || []).forEach((q: any) => {
-  //     if (answers[q.id] && answers[q.id].trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()) {
-  //       correct++;
-  //     }
-  //   });
+    let correct = 0;
+    (questions || []).forEach((q: any) => {
+      if (answers[q.id] && answers[q.id].trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()) {
+        correct++;
+      }
+    });
 
-  //   await scoresCollection.doc(docId).set({
-  //     lessonId,
-  //     schoolId,
-  //     attempts,
-  //     answers,
-  //     score: correct,
-  //   });
-  // }
+    await scoresCollection.doc(docId).set({
+      lessonId,
+      schoolId,
+      attempts,
+      answers,
+      score: correct,
+    });
+  }
 
   // Enable & Difficulty
   async updateLessonEnableStatus(id: string, isEnabled: boolean): Promise<void> {

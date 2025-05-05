@@ -10,17 +10,14 @@ import { AdminModule } from './admin/admin.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { ScoresModule } from './scores/scores.module';
 import { VideosModule } from './videos/videos.module';
-
+import { GamesModule } from './game/games.module';
 
 // JWT
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { GamesModule } from './game/games.module';
-
 
 // Firebase Admin
 import * as admin from 'firebase-admin';
-import * as serviceAccount from '../math-75c23-firebase-adminsdk-fbsvc-b37ecf0812.json'; //
 
 @Module({
   imports: [
@@ -43,8 +40,11 @@ import * as serviceAccount from '../math-75c23-firebase-adminsdk-fbsvc-b37ecf081
 export class AppModule {
   constructor() {
     if (!admin.apps.length) {
+      const serviceAccount = JSON.parse(
+        process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
+      );
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+        credential: admin.credential.cert(serviceAccount),
       });
     }
   }

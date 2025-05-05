@@ -4,7 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { Lesson } from './lesson.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { arrayUnion } from 'firebase/firestore'; 
+import { FieldValue } from 'firebase-admin/firestore';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -51,7 +51,6 @@ export class LessonsService {
     await this.lessonsCollection.doc(id).delete();
   }
 
-  // Format title
   private formatTitle(id: string): string {
     return id
       .replace(/-/g, ' ')
@@ -65,7 +64,7 @@ export class LessonsService {
     const keypoint = { id: keypointId, content };
 
     await lessonDoc.update({
-      keypoints: admin.firestore.FieldValue.arrayUnion(keypoint),
+      keypoints: FieldValue.arrayUnion(keypoint),
     });
 
     return keypoint;
@@ -115,7 +114,7 @@ export class LessonsService {
     };
 
     await lessonDoc.update({
-      questions: admin.firestore.FieldValue.arrayUnion(question),
+      questions: FieldValue.arrayUnion(question),
     });
 
     return question;
@@ -221,5 +220,4 @@ export class LessonsService {
   
     return scoreDoc.data();
   }
-  
 }

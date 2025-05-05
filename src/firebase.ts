@@ -2,7 +2,10 @@
 import * as admin from 'firebase-admin';
 import { cert } from 'firebase-admin/app';
 
-import * as serviceAccount from '../math-75c23-firebase-adminsdk-fbsvc-b37ecf0812.json'; // adjust path if needed
+// Parse from environment variable
+const serviceAccount = JSON.parse(
+  process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
+);
 
 admin.initializeApp({
   credential: cert(serviceAccount as admin.ServiceAccount),
